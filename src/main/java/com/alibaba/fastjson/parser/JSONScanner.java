@@ -822,6 +822,12 @@ public final class JSONScanner extends JSONLexerBase {
         return bp == len || (ch == EOI && bp + 1 >= len);
     }
 
+    /**
+     * Scans a field using int type.
+     * @param fieldName the field to be scanned
+     * @return the scanned int value
+     * @throws JSONException when the scanned value is float
+     */
     public int scanFieldInt(char[] fieldName) {
         matchStat = UNKNOWN;
         int startPos = this.bp;
@@ -862,7 +868,8 @@ public final class JSONScanner extends JSONLexerBase {
                     value = value_10 + (ch - '0');
                 } else if (ch == '.') {
                     matchStat = NOT_MATCH;
-                    return 0;
+                    throw new JSONException("error, casting decimal to int");
+//                    return 0;
                 } else {
                     break;
                 }
@@ -950,10 +957,6 @@ public final class JSONScanner extends JSONLexerBase {
             if (!charArrayCompare(text, bp, fieldName)) {
                 if (isWhitespace(ch)) {
                     next();
-
-                    while (isWhitespace(ch)) {
-                        next();
-                    }
                     continue;
                 }
                 matchStat = NOT_MATCH_NAME;
@@ -967,15 +970,9 @@ public final class JSONScanner extends JSONLexerBase {
 
         char ch = charAt(index++);
         if (ch != '"') {
-            while (isWhitespace(ch)) {
-                ch = charAt(index++);
-            }
+            matchStat = NOT_MATCH;
 
-            if (ch != '"') {
-                matchStat = NOT_MATCH;
-
-                return stringDefaultValue();
-            }
+            return stringDefaultValue();
         }
 
         final String strVal;
@@ -1178,36 +1175,17 @@ public final class JSONScanner extends JSONLexerBase {
     public long scanFieldSymbol(char[] fieldName) {
         matchStat = UNKNOWN;
 
-        for (;;) {
-            if (!charArrayCompare(text, bp, fieldName)) {
-                if (isWhitespace(ch)) {
-                    next();
-
-                    while (isWhitespace(ch)) {
-                        next();
-                    }
-                    continue;
-                }
-                matchStat = NOT_MATCH_NAME;
-                return 0;
-            } else {
-                break;
-            }
+        if (!charArrayCompare(text, bp, fieldName)) {
+            matchStat = NOT_MATCH_NAME;
+            return 0;
         }
 
         int index = bp + fieldName.length;
 
         char ch = charAt(index++);
         if (ch != '"') {
-            while (isWhitespace(ch)) {
-                ch = charAt(index++);
-            }
-
-            if (ch != '"') {
-                matchStat = NOT_MATCH;
-
-                return 0;
-            }
+            matchStat = NOT_MATCH;
+            return 0;
         }
 
         long hash = 0xcbf29ce484222325L;
@@ -1427,6 +1405,12 @@ public final class JSONScanner extends JSONLexerBase {
         return list;
     }
 
+    /**
+     * Scans a field using long type.
+     * @param fieldName the field to be scanned
+     * @return the scanned long value
+     * @throws JSONException when the scanned value is float
+     */
     public long scanFieldLong(char[] fieldName) {
         matchStat = UNKNOWN;
         int startPos = this.bp;
@@ -1461,7 +1445,8 @@ public final class JSONScanner extends JSONLexerBase {
                     value = value * 10 + (ch - '0');
                 } else if (ch == '.') {
                     matchStat = NOT_MATCH;
-                    return 0;
+                    throw new JSONException("error, casting decimal to long");
+//                    return 0;
                 } else {
                     if (quote) {
                         if (ch != '"') {

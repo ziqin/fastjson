@@ -1900,6 +1900,12 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
         }
     }
 
+    /**
+     * Scans a field using int type.
+     * @param fieldName the field to be scanned
+     * @return the scanned int value
+     * @throws JSONException when the scanned value is float
+     */
     public int scanFieldInt(char[] fieldName) {
         matchStat = UNKNOWN;
 
@@ -1925,7 +1931,8 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
                     value = value * 10 + (chLocal - '0');
                 } else if (chLocal == '.') {
                     matchStat = NOT_MATCH;
-                    return 0;
+                    throw new JSONException("error, casting decimal to int");
+//                    return 0;
                 } else {
                     break;
                 }
@@ -1983,6 +1990,12 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
         return negative ? -value : value;
     }
 
+    /**
+     * Scans a field using int[] type.
+     * @param fieldName the field to be scanned
+     * @return the scanned int[] value
+     * @throws JSONException when the scanned value is float[]
+     */
     public final int[] scanFieldIntArray(char[] fieldName) {
         matchStat = UNKNOWN;
 
@@ -2016,6 +2029,10 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
                     int value = chLocal - '0';
                     for (; ; ) {
                         chLocal = charAt(bp + (offset++));
+
+                        if (chLocal == '.'){
+                            throw new JSONException("error, casting decimal to int");
+                        }
 
                         if (chLocal >= '0' && chLocal <= '9') {
                             value = value * 10 + (chLocal - '0');
@@ -2325,6 +2342,12 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
         return value;
     }
 
+    /**
+     * Scans a field using long type.
+     * @param fieldName the field to be scanned
+     * @return the scanned long value
+     * @throws JSONException when the scanned value is float
+     */
     public long scanFieldLong(char[] fieldName) {
         matchStat = UNKNOWN;
 
@@ -2351,7 +2374,8 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
                     value = value * 10 + (chLocal - '0');
                 } else if (chLocal == '.') {
                     matchStat = NOT_MATCH;
-                    return 0;
+                    throw new JSONException("error, casting decimal to long");
+//                    return 0;
                 } else {
                     break;
                 }
@@ -3559,9 +3583,9 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
                 value = Double.parseDouble(text);
             }
         } else if (chLocal == 'n' &&
-                   charAt(bp + offset) == 'u' &&
-                   charAt(bp + offset + 1) == 'l' &&
-                   charAt(bp + offset + 2) == 'l') {
+                charAt(bp + offset) == 'u' &&
+                charAt(bp + offset + 1) == 'l' &&
+                charAt(bp + offset + 2) == 'l') {
             matchStat = VALUE_NULL;
             value = 0;
             offset += 3;
@@ -3718,9 +3742,9 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
             char[] chars = this.sub_chars(start, count);
             value = new BigDecimal(chars);
         } else if (chLocal == 'n' &&
-                   charAt(bp + offset) == 'u' &&
-                   charAt(bp + offset + 1) == 'l' &&
-                   charAt(bp + offset + 2) == 'l') {
+                charAt(bp + offset) == 'u' &&
+                charAt(bp + offset + 1) == 'l' &&
+                charAt(bp + offset + 2) == 'l') {
             matchStat = VALUE_NULL;
             value = null;
             offset += 3;
@@ -3860,9 +3884,9 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
                 value = new BigInteger(strVal);
             }
         } else if (chLocal == 'n' &&
-                   charAt(bp + offset) == 'u' &&
-                   charAt(bp + offset + 1) == 'l' &&
-                   charAt(bp + offset + 2) == 'l') {
+                charAt(bp + offset) == 'u' &&
+                charAt(bp + offset + 1) == 'l' &&
+                charAt(bp + offset + 2) == 'l') {
             matchStat = VALUE_NULL;
             value = null;
             offset += 3;
@@ -4156,9 +4180,9 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
 
             dateVal = new java.util.Date(millis);
         } else if (chLocal == 'n' &&
-                   charAt(bp + offset) == 'u' &&
-                   charAt(bp + offset + 1) == 'l' &&
-                   charAt(bp + offset + 2) == 'l') {
+                charAt(bp + offset) == 'u' &&
+                charAt(bp + offset + 1) == 'l' &&
+                charAt(bp + offset + 2) == 'l') {
             matchStat = VALUE_NULL;
             dateVal = null;
             offset += 3;
@@ -4640,17 +4664,17 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
         next();
 
         if (ch == ' '  ||
-            ch == ','  ||
-            ch == '}'  ||
-            ch == ']'  ||
-            ch == '\n' ||
-            ch == '\r' ||
-            ch == '\t' ||
-            ch == EOI  ||
-            ch == '\f' ||
-            ch == '\b' ||
-            ch == ':'  ||
-            ch == '/') {
+                ch == ','  ||
+                ch == '}'  ||
+                ch == ']'  ||
+                ch == '\n' ||
+                ch == '\r' ||
+                ch == '\t' ||
+                ch == EOI  ||
+                ch == '\f' ||
+                ch == '\b' ||
+                ch == ':'  ||
+                ch == '/') {
             token = JSONToken.TRUE;
         } else {
             throw new JSONException("scan true error");
@@ -4710,15 +4734,15 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
         next();
 
         if (ch == ' '  ||
-            ch == ','  ||
-            ch == '}'  ||
-            ch == ']'  ||
-            ch == '\n' ||
-            ch == '\r' ||
-            ch == '\t' ||
-            ch == EOI  ||
-            ch == '\f' ||
-            ch == '\b') {
+                ch == ','  ||
+                ch == '}'  ||
+                ch == ']'  ||
+                ch == '\n' ||
+                ch == '\r' ||
+                ch == '\t' ||
+                ch == EOI  ||
+                ch == '\f' ||
+                ch == '\b') {
             token = JSONToken.NEW;
         } else {
             throw new JSONException("scan new error");
@@ -4752,17 +4776,17 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
         next();
 
         if (ch == ' '  ||
-            ch == ','  ||
-            ch == '}'  ||
-            ch == ']'  ||
-            ch == '\n' ||
-            ch == '\r' ||
-            ch == '\t' ||
-            ch == EOI  ||
-            ch == '\f' ||
-            ch == '\b' ||
-            ch == ':'  ||
-            ch == '/') {
+                ch == ','  ||
+                ch == '}'  ||
+                ch == ']'  ||
+                ch == '\n' ||
+                ch == '\r' ||
+                ch == '\t' ||
+                ch == EOI  ||
+                ch == '\f' ||
+                ch == '\b' ||
+                ch == ':'  ||
+                ch == '/') {
             token = JSONToken.FALSE;
         } else {
             throw new JSONException("scan false error");
@@ -4917,11 +4941,11 @@ public abstract class JSONLexerBase implements JSONLexer, Closeable {
         for (;;) {
             if (ch <= '/') {
                 if (ch == ' '  ||
-                    ch == '\r' ||
-                    ch == '\n' ||
-                    ch == '\t' ||
-                    ch == '\f' ||
-                    ch == '\b') {
+                        ch == '\r' ||
+                        ch == '\n' ||
+                        ch == '\t' ||
+                        ch == '\f' ||
+                        ch == '\b') {
                     next();
                     continue;
                 } else if (ch == '/') {
