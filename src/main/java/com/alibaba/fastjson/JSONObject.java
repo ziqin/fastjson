@@ -82,6 +82,7 @@ public class JSONObject extends JSON implements Map<String, Object>, Cloneable, 
         if (ordered) {
             map = new LinkedHashMap<String, Object>(initialCapacity);
         } else {
+            // Issue 3188 test: false
             map = new HashMap<String, Object>(initialCapacity);
         }
     }

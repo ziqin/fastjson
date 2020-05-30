@@ -1,0 +1,26 @@
+<!-- Checks for Javadoc comments.                     -->
+<!-- See http://checkstyle.sourceforge.net/config_javadoc.html -->
+<module name="lab11checker">
+    <module name="JavadocMethod">
+        <property name="scope" value="package"/>
+        <property name="allowMissingParamTags" value="false"/>
+        <property name="allowMissingThrowsTags" value="false"/>
+        <property name="allowMissingReturnTag" value="false"/>
+        <property name="allowThrowsTagsForSubclasses" value="false"/>
+        <property name="allowUndeclaredRTE" value="false"/>
+        <property name="allowMissingPropertyJavadoc" value="false"/>
+        <property name="severity" value="error"/>
+    </module>
+    <module name="JavadocType">
+        <property name="scope" value="package"/>
+        <property name="severity" value="ignore"/>
+    </module>
+    <module name="JavadocVariable">
+        <property name="scope" value="package"/>
+        <property name="severity" value="ignore"/>
+    </module>
+    <module name="JavadocStyle">
+        <property name="checkEmptyJavadoc" value="true"/>
+        <property name="severity" value="ignore"/>
+    </module>
+</module>

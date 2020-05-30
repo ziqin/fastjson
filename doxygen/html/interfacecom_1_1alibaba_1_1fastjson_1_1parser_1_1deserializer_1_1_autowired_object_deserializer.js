@@ -1,0 +1,4 @@
+var interfacecom_1_1alibaba_1_1fastjson_1_1parser_1_1deserializer_1_1_autowired_object_deserializer =
+[
+    [ "getAutowiredFor", "interfacecom_1_1alibaba_1_1fastjson_1_1parser_1_1deserializer_1_1_autowired_object_deserializer.html#a79fc0febb70c6e47e2c6270b9b55a849", null ]
+];
