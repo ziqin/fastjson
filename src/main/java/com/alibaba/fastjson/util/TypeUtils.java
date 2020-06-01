@@ -32,6 +32,8 @@ import com.alibaba.fastjson.serializer.CalendarCodec;
 import com.alibaba.fastjson.serializer.SerializeBeanInfo;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -1201,7 +1203,7 @@ public class TypeUtils{
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <T> T castToEnum(Object obj, Class<T> clazz, ParserConfig mapping){
+    public static <T> T castToEnum(Object obj, Class<T> clazz, ParserConfig mapping) {
         try{
             if(obj instanceof String){
                 String name = (String) obj;
@@ -1235,6 +1237,41 @@ public class TypeUtils{
                 Object[] values = clazz.getEnumConstants();
                 if(ordinal < values.length){
                     return (T) values[ordinal];
+                }
+            }
+
+            if (obj instanceof JSONObject) {
+                JSONObject object = (JSONObject) obj;
+                Set<String> keys = object.keySet();
+                Map<String, PropertyDescriptor> properties = new HashMap<String, PropertyDescriptor>();
+                for (PropertyDescriptor descriptor : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
+                    properties.put(descriptor.getName(), descriptor);
+                }
+                for (T e : clazz.getEnumConstants()) {
+                    boolean matchAll = true;
+                    for (String key : keys) {
+                        PropertyDescriptor descriptor = properties.get(key);
+                        Class<?> type = null;
+                        Object value = null;
+                        try {
+                            type = descriptor.getPropertyType();
+                            value = descriptor.getReadMethod().invoke(e);
+                        } catch (Exception ignored) {
+                        }
+                        if (value == null) {
+                            try {
+                                Field field = clazz.getField(key);
+                                type = field.getType();
+                                value = field.get(e);
+                            } catch (Exception ignored) {
+                            }
+                        }
+                        if (type == null || !Objects.equals(TypeUtils.cast(object.get(key), type, null), value)) {
+                            matchAll = false;
+                            break;
+                        }
+                    }
+                    if (matchAll) return e; // TODO: check duplicate
                 }
             }
         } catch(Exception ex){

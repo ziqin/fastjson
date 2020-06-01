@@ -106,11 +106,19 @@ public class EnumDeserializer implements ObjectDeserializer {
 
         return enums[enumIndex];
     }
-    
+
     public Enum<?> valueOf(int ordinal) {
         return ordinalEnums[ordinal];
     }
 
+    /**
+     * Deserializes the given object to an object of the given type
+     * @param parser context DefaultJSONParser being deserialized
+     * @param type the type of the Object to deserialize to
+     * @param fieldName parent object field name
+     * @param <T> the type specified by type
+     * @return deserialized value
+     */
     @SuppressWarnings("unchecked")
     public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
         try {
@@ -155,6 +163,9 @@ public class EnumDeserializer implements ObjectDeserializer {
                     throw new JSONException("not match enum value, " + enumClass.getName() + " : " + name);
                 }
                 return (T) e;
+            } else if (token == JSONToken.LBRACE) { // TODO: add symmetric support for serialization
+                value = parser.parse();
+                return TypeUtils.castToEnum(value, (Class<? extends T>) type, null);
             } else if (token == JSONToken.NULL) {
                 value = null;
                 lexer.nextToken(JSONToken.COMMA);
