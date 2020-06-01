@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
 
+// https://github.com/alibaba/fastjson/issues/2854
 public class Issue2854 {
     @Test
     public void testParseEnumName() {
